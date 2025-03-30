@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A App Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-2xl mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-center">Q&A App Test</h1>
+        
+        <!-- Question Form -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">Ask a Question</h2>
+            <div class="flex gap-2">
+                <input type="text" id="questionInput" placeholder="Enter your question" 
+                       class="flex-1 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="askQuestion()" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Ask
+                </button>
+            </div>
+        </div>
+
+        <!-- Answer Display -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">Answer</h2>
+            <div id="answer" class="text-gray-700"></div>
+        </div>
+
+        <!-- History -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Q&A History</h2>
+            <div id="history" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://192.168.29.71:8000';
+
+        // Function to ask a question
+        async function askQuestion() {
+            const question = document.getElementById('questionInput').value;
+            if (!question) return;
+
+            const response = await fetch(`${BASE_URL}/api/ask/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question })
+            });
+
+            const data = await response.json();
+            if (data.answer) {
+                document.getElementById('answer').textContent = data.answer;
+                loadHistory(); // Refresh history after new question
+            } else {
+                document.getElementById('answer').textContent = 'Error: ' + (data.error || 'Unknown error');
+            }
+        }
+
+        // Function to load history
+        async function loadHistory() {
+            const response = await fetch(`${BASE_URL}/api/history/`);
+            const history = await response.json();
+            
+            const historyDiv = document.getElementById('history');
+            historyDiv.innerHTML = history.map(item => `
+                <div class="border-b pb-4">
+                    <div class="font-semibold">Q: ${item.question}</div>
+                    <div class="text-gray-600">A: ${item.answer}</div>
+                </div>
+            `).join('');
+        }
+
+        // Load history on page load
+        loadHistory();
+    </script>
+</body>
+</html>
