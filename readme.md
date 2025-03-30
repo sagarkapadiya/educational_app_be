@@ -8,8 +8,8 @@
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/yourproject.git
-   cd yourproject
+   git clone https://github.com/sagarkapadiya/educational_app_be.git
+   cd educational_app_be
    ```
 
 2. Create and activate a virtual environment:
